@@ -1,31 +1,20 @@
 import Compositor from './Compositor.js';
 import {loadLevel} from './loaders.js';
-import {loadMarioSprite, loadBackgroundSprites} from './sprites.js';
-import {createBackgroundLayer} from './layers.js';
-
+import {createMario} from './mario.js';
+import {loadBackgroundSprites} from './sprites.js';
+import {createSpriteLayer,createBackgroundLayer} from './layers.js';
+import Entity from './entity.js';
 const canvas = document.getElementById('screen');
 const context = canvas.getContext('2d');
+context.scale(3,2);
 
-
-function createSpriteLayer(sprite, pos) {
-    return function drawSpriteLayer(context) {
-        sprite.draw('idle', context, pos.x, pos.y);
-    };
-}
-
-class Vec2{
-    constructor (x,y){
-        this.x= x;
-        this.y= y;
-    }
-}
 
 Promise.all([
-    loadMarioSprite(),
+    createMario(),
     loadBackgroundSprites(),
     loadLevel('1-1'),
 ])
-.then(([marioSprite, backgroundSprites, level]) => {
+.then(([mario, backgroundSprites, level]) => {
     console.log('Level loader', level);
 
     const comp = new Compositor();
@@ -33,17 +22,13 @@ Promise.all([
 
     const gravity = 0.5;
 
-    const pos = new Vec2(64,180);
-    const velocity = new Vec2 (2,-10);
-    
-    
-    comp.layers.push(createSpriteLayer(marioSprite, pos));
+    comp.layers.push(createSpriteLayer(mario));
 
-    function update() {
+    function update(time) {
+        console.log(time);
         comp.draw(context);
-        pos.x += velocity.x;
-        pos.y += velocity.y;
-        velocity.y += gravity;
+        mario.update();
+        mario.vel.y += gravity;
         requestAnimationFrame(update);
     }
 
