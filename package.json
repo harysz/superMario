@@ -1,0 +1,23 @@
+{
+  "name": "super-mario",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve ./public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harysz/superMario.git"
+  },
+  "author": "Arnoldas Valasinas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harysz/superMario/issues"
+  },
+  "homepage": "https://github.com/harysz/superMario#readme",
+  "dependencies": {
+    "serve": "^11.2.0"
+  }
+}

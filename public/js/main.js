@@ -1,31 +1,51 @@
-import SpriteSheet from './SpriteSheet.js';
-import {loadImage, loadLevel} from './loaders.js';
-
-function drawBackground (background, context, sprites){
-    background.ranges.forEach(([x1,x2,y1,y2])=>{
-        for( let x=x1; x<x2; x++){
-            for( let y=y1; y < y2; y++){
-                sprites.drawTile(background.tile, context, x, y);
-            }
-        }
-    });
-}
+import Compositor from './Compositor.js';
+import {loadLevel} from './loaders.js';
+import {loadMarioSprite, loadBackgroundSprites} from './sprites.js';
+import {createBackgroundLayer} from './layers.js';
 
 const canvas = document.getElementById('screen');
 const context = canvas.getContext('2d');
 
 
+function createSpriteLayer(sprite, pos) {
+    return function drawSpriteLayer(context) {
+        sprite.draw('idle', context, pos.x, pos.y);
+    };
+}
 
-loadImage('/img/sprite.png').then(image=>{
+class Vec2{
+    constructor (x,y){
+        this.x= x;
+        this.y= y;
+    }
+}
+
+Promise.all([
+    loadMarioSprite(),
+    loadBackgroundSprites(),
+    loadLevel('1-1'),
+])
+.then(([marioSprite, backgroundSprites, level]) => {
+    console.log('Level loader', level);
+
+    const comp = new Compositor();
+    comp.layers.push(createBackgroundLayer(level.backgrounds, backgroundSprites));
+
+    const gravity = 0.5;
+
+    const pos = new Vec2(64,180);
+    const velocity = new Vec2 (2,-10);
     
-    const sprites = new SpriteSheet (image, 16, 16);
-    sprites.define('ground',0,0);
-    sprites.define('sky',3,23);
+    
+    comp.layers.push(createSpriteLayer(marioSprite, pos));
 
-    loadLevel('1-1').then(level =>{
-        console.log(level);
-        level.backgrounds.forEach(background =>{
-            drawBackground(background, context, sprites);
-        });
-    });
+    function update() {
+        comp.draw(context);
+        pos.x += velocity.x;
+        pos.y += velocity.y;
+        velocity.y += gravity;
+        requestAnimationFrame(update);
+    }
+
+    update();
 });
