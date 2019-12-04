@@ -9,7 +9,7 @@ const canvas = document.getElementById('screen');
 const context = canvas.getContext('2d');
 context.scale(1.5,1.3);
 
-
+const time = 0;
 Promise.all([
     createMario(),
     loadBackgroundSprites(),
@@ -28,21 +28,15 @@ Promise.all([
 
     comp.layers.push(createSpriteLayer(mario));
 
-    const timer = new Time(1/60);
+    const timer = new Timer(1/60);
 
    
-   timer.update = function update(time) {
-        accumulatedTime += (time - lastTime)/1000;
-        while(accumulatedTime > deltaTime){
+   timer.update = function update(deltaTime) {
+      
         comp.draw(context);
         mario.update(deltaTime);
         mario.vel.y += gravity;
+    };
 
-        accumulatedTime -= deltaTime;
-        }
-        requestAnimationFrame(update);
-        lastTime = time;
-    }
-
-    update(0);
+    timer.start();
 });
