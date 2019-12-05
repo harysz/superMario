@@ -4,7 +4,7 @@ import {loadLevel} from './loaders.js';
 import {createMario} from './mario.js';
 import {loadBackgroundSprites} from './sprites.js';
 import {createSpriteLayer,createBackgroundLayer} from './layers.js';
-import Entity from './entity.js';
+
 import Keyboard from './KeyboardState.js';
 
 
@@ -18,24 +18,22 @@ Promise.all([
     loadLevel('1-1'),
 ])
 .then(([mario, backgroundSprites, level]) => {
-    console.log('Level loader', level);
-
     const comp = new Compositor();
-    comp.layers.push(createBackgroundLayer(level.backgrounds, backgroundSprites));
+
+    const backgroundLayer = createBackgroundLayer(level.backgrounds, backgroundSprites);
+    comp.layers.push(backgroundLayer);
 
     const gravity = 2000;
     mario.pos.set(64,180);
-    mario.vel.set(200,-600);
 
-    const SPACE =32;
+    const SPACE = 32;
     const input = new Keyboard();
-    input.addMapping(SPACE, keyState =>{
-        if(keyState){
+    input.addMapping(SPACE, keyState => {
+        if (keyState) {
             mario.jump.start();
         } else {
             mario.jump.cancel();
         }
-    console.log(keyState);
     });
     input.listenTo(window);
 
