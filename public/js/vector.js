@@ -24,7 +24,6 @@ export class Matrix {
             this.grid[x] = [];
         }
         this.grid[x][y]=value;
-
     }
 }
 
